@@ -1,7 +1,10 @@
 package com.example.SNS.user.controller;
 
+import com.example.SNS.user.dto.request.UserLoginRequest;
 import com.example.SNS.user.dto.request.UserSignupRequest;
+import com.example.SNS.user.dto.response.UserLoginResponse;
 import com.example.SNS.user.dto.response.UserResponse;
+import com.example.SNS.user.service.AuthService;
 import com.example.SNS.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+
+    private final AuthService authService;
 
     // 회원가입
     @PostMapping("/signup")
@@ -28,5 +33,11 @@ public class UserController {
         return userService.findByUsername(username)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest request) {
+        String token = authService.login(request);
+        return ResponseEntity.ok(new UserLoginResponse(token));
     }
 }
