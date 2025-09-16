@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -147,5 +149,16 @@ public class UserControllerTest {
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().string("로그인 실패: 아이디 또는 비밀번호를 확인하세요"));
     }
+
+    @Test
+    @DisplayName("토큰 기반 현재 사용자 정보 조회 테스트")
+    @WithMockUser(username = "test")  // 인증된 유저로 흉내
+    public void getCurrentUserInfoTest() throws Exception {
+        mockMvc.perform(get("/api/users/userInfo")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("test"));
+    }
+
 
 }

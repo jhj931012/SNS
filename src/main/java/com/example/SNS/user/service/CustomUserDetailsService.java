@@ -30,4 +30,9 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .authorities(Collections.emptyList())  // 권한 부여 필요시 추가
                 .build();
     }
+
+    public UserEntity loadUserEntityByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
 }
